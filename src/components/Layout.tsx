@@ -1,11 +1,20 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
+import Drawer from './Drawer'
+import Navbar from './Navbar';
 
 const Layout = ({ children }: { children: ReactElement}) => {
-  return (
-    <main>
-        {children}
-    </main>
-  )
+    
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <>
+            <Navbar setIsOpen={setIsOpen} />
+            <Drawer isOpen={isOpen} setIsOpen={setIsOpen} />
+            <main>
+                {children}
+            </main>
+        </>
+    )
 }
 
 export default Layout

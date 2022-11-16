@@ -12,7 +12,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
   const isLayoutHidden = [`/login`].includes(router.pathname);
 
-  const LayoutComponent = isLayoutHidden ? Layout : Fragment;
+  const LayoutComponent = isLayoutHidden ? Fragment : Layout;
 
   const [queryClient] = useState(() => new QueryClient())
 
