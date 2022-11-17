@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import '/node_modules/primeflex/primeflex.css'
 import "primereact/resources/themes/tailwind-light/theme.css";
 import "primereact/resources/primereact.min.css";        
 import "primeicons/primeicons.css";  

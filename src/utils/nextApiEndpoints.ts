@@ -1,6 +1,6 @@
 enum NEXT_API_ENDPOINTS {
 
-    POSTS = 'posts',
+    POSTS = 'fetchPosts',
 
 };
 

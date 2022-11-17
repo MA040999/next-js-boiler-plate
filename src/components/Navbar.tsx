@@ -9,7 +9,7 @@ interface INavbarProps {
 const Navbar = ({setIsOpen} : INavbarProps) => {
   return (
     <Menubar
-        start={<Button icon="pi pi-bars" className='p-button-sm' onClick={() => setIsOpen(true)} />}
+        start={<Button icon="pi pi-bars" onClick={() => setIsOpen(true)} />}
     />
   )
 }
