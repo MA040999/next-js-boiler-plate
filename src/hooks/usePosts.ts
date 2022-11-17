@@ -5,7 +5,7 @@ import nextApiRequest from '../lib/nextApiRequest'
 import HTTP_METHODS from '../utils/httpsMethods'
 import NEXT_API_ENDPOINTS from '../utils/nextApiEndpoints'
 
-const fetchPosts = async (limit = 10, abortSignal?: GenericAbortSignal) => {
+const fetchPosts = async (limit = 10, abortSignal?: AbortSignal) => {
 
   const { data } = await nextApiRequest<IPost[]>(HTTP_METHODS.GET, NEXT_API_ENDPOINTS.POSTS, abortSignal)
 
@@ -14,8 +14,8 @@ const fetchPosts = async (limit = 10, abortSignal?: GenericAbortSignal) => {
   return result
 }
 
-const usePosts = (limit: number, abortSignal?: GenericAbortSignal) => {
-  return useQuery(['posts', limit], () => fetchPosts(limit, abortSignal))
+const usePosts = (limit: number) => {
+  return useQuery(['posts', limit], ({signal}) => fetchPosts(limit, signal))
 }
 
 export { usePosts, fetchPosts }
