@@ -27,7 +27,7 @@ let emptyPost: IPost = {
 const Table = () => {
 
     const [postCount, setPostCount] = useState(10)
-    const { data: posts, isLoading, isFetching } = usePosts(postCount) 
+    const { data: posts, isLoading } = usePosts(postCount) 
 
     const {
         register,
@@ -35,9 +35,7 @@ const Table = () => {
         handleSubmit,
         setValue,
         clearErrors,
-        getValues,
         reset,
-        control,
       } = useForm<PostFormInputs>({
         resolver: zodResolver(postFormSchema),
         defaultValues: emptyPost,
@@ -141,10 +139,10 @@ const Table = () => {
 
     const actionBodyTemplate = (rowData: IPost) => {
         return (
-            <React.Fragment>
+            <div className='flex'>
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editPost(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeletePost(rowData)} />
-            </React.Fragment>
+            </div>
         );
     }
 
@@ -179,7 +177,7 @@ const Table = () => {
             <Toast ref={toast} />
 
             <div className="card">
-                <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                <Toolbar className="flex gap-4 mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
                 <DataTable ref={dt} value={posts} selection={selectedPosts} onSelectionChange={(e) => setSelectedPosts(e.value)}
                     dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
