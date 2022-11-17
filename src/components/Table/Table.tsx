@@ -34,6 +34,7 @@ const Table = () => {
         formState: { errors },
         handleSubmit,
         setValue,
+        clearErrors,
         getValues,
         reset,
         control,
@@ -52,12 +53,13 @@ const Table = () => {
     const dt = useRef<any>(null);
 
     const openNew = () => {
-        setPost(emptyPost);
+        reset(emptyPost)
         setSubmitted(false);
         setPostDialog(true);
     }
 
     const hideDialog = () => {
+        clearErrors()   
         setSubmitted(false);
         setPostDialog(false);
     }
@@ -72,6 +74,7 @@ const Table = () => {
 
     const savePost = (data: PostFormInputs) => {
         console.log("🚀 ~ data", data)
+        clearErrors()
         // setSubmitted(true);
 
         // toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
@@ -79,13 +82,11 @@ const Table = () => {
         // toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
         
         // setPostDialog(false);
+        
         // setPost(emptyPost);
     }
 
     const editPost = (post: IPost) => {
-        console.log('get', getValues().userId)
-        console.log("🚀 ~ post.userId", post.userId)
-
         setValue('body', post.body)
         setValue('title', post.title)
         setValue('userId', post.userId)
