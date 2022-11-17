@@ -4,7 +4,7 @@ type ErrorMessageProps = {
 
 const ErrorMessage = ({ message }: ErrorMessageProps) => {
   return (
-    <p role="alert" className="text-sm text-input-error">{message}</p>
+    <p role="alert" className="text-sm mt-1 text-red-500">{message}</p>
   )
 }
 

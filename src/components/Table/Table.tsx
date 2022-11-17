@@ -1,24 +1,16 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { classNames } from 'primereact/utils';
+import React, { useState, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
-import { Column, ColumnBodyType } from 'primereact/column';
+import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { FileUpload } from 'primereact/fileupload';
-import { Rating } from 'primereact/rating';
 import { Toolbar } from 'primereact/toolbar';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
 import './table.module.css';
 import { usePosts } from '../../hooks/usePosts';
 import { IPost } from '../../interfaces/post.interface';
 import { useForm } from 'react-hook-form';
-import { z } from "zod";
-import { postFormInputs, postFormSchema } from '../../schemas/formInputSchema';
+import { PostFormInputs, postFormSchema } from '../../schemas/formInputSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorMessage from '../Form/ErrorMessage';
 import Input from '../Form/Input';
@@ -37,20 +29,18 @@ const Table = () => {
     const [postCount, setPostCount] = useState(10)
     const { data: posts, isLoading, isFetching } = usePosts(postCount) 
 
-    // const [posts, setPosts] = useState<IPost[]>([]);
-
     const {
         register,
         formState: { errors },
         handleSubmit,
         setValue,
+        getValues,
         reset,
         control,
-      } = useForm<postFormInputs>({
+      } = useForm<PostFormInputs>({
         resolver: zodResolver(postFormSchema),
         defaultValues: emptyPost,
       });
-    
 
     const [postDialog, setPostDialog] = useState(false);
     const [deletePostDialog, setDeletePostDialog] = useState(false);
@@ -58,13 +48,8 @@ const Table = () => {
     const [post, setPost] = useState(emptyPost);
     const [selectedPosts, setSelectedPosts] = useState<IPost[]>([]);
     const [submitted, setSubmitted] = useState(false);
-    const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef<any>(null);
     const dt = useRef<any>(null);
-
-    const formatCurrency = (value: number) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    }
 
     const openNew = () => {
         setPost(emptyPost);
@@ -85,19 +70,25 @@ const Table = () => {
         setDeletePostsDialog(false);
     }
 
-    const savePost = () => {
-        setSubmitted(true);
+    const savePost = (data: PostFormInputs) => {
+        console.log("🚀 ~ data", data)
+        // setSubmitted(true);
 
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
+        // toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
 
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
+        // toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
         
-        setPostDialog(false);
-        setPost(emptyPost);
+        // setPostDialog(false);
+        // setPost(emptyPost);
     }
 
     const editPost = (post: IPost) => {
-        setPost({...post});
+        console.log('get', getValues().userId)
+        console.log("🚀 ~ post.userId", post.userId)
+
+        setValue('body', post.body)
+        setValue('title', post.title)
+        setValue('userId', post.userId)
         setPostDialog(true);
     }
 
@@ -126,22 +117,6 @@ const Table = () => {
         toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Posts Deleted', life: 3000 });
     }
 
-    // const onInputChange = (e, name: keyof IPost) => {
-    //     const val = (e.target && e.target.value) || '';
-    //     let _post = post;
-    //     _post[`${name}`] = val;
-
-    //     setPost(_post);
-    // }
-
-    // const onInputNumberChange = (e, name) => {
-    //     const val = e.value || 0;
-    //     let _post = {...post};
-    //     _post[`${name}`] = val;
-
-    //     setPost(_post);
-    // }
-
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -154,7 +129,6 @@ const Table = () => {
     const rightToolbarTemplate = () => {
         return (
             <React.Fragment>
-                {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Import" className="mr-2 inline-block" onUpload={importCSV} /> */}
                 <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
             </React.Fragment>
         )
@@ -163,22 +137,6 @@ const Table = () => {
     const exportCSV = () => {
         dt.current.exportCSV();
     }
-
-    // const imageBodyTemplate = (rowData: IPost) => {
-    //     return <img src={`images/post/${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="post-image" />
-    // }
-
-    // const priceBodyTemplate = (rowData: IPost) => {
-    //     return formatCurrency(rowData.price);
-    // }
-
-    // const ratingBodyTemplate = (rowData: IPost) => {
-    //     return <Rating value={rowData.rating} readOnly cancel={false} />;
-    // }
-
-    // const statusBodyTemplate = (rowData: IPost) => {
-    //     return <span className={`post-badge status-${rowData.inventoryStatus.toLowerCase()}`}>{rowData.inventoryStatus}</span>;
-    // }
 
     const actionBodyTemplate = (rowData: IPost) => {
         return (
@@ -192,16 +150,12 @@ const Table = () => {
     const header = (
         <div className="table-header">
             <h5 className="mx-0 my-1">Manage Posts</h5>
-            {/* <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
-            </span> */}
         </div>
     );
     const postDialogFooter = (
         <React.Fragment>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={savePost} />
+            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={handleSubmit(savePost)} />
         </React.Fragment>
     );
     const deletePostDialogFooter = (
@@ -230,43 +184,23 @@ const Table = () => {
                     dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} posts"
-                    globalFilter={globalFilter} header={header} responsiveLayout="scroll">
+                    header={header} responsiveLayout="scroll">
                     <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                     <Column field="userId" header="User ID" sortable style={{ minWidth: '12rem' }}></Column>
                     <Column field="title" header="Title" sortable style={{ minWidth: '16rem' }}></Column>
                     <Column field="body" header="Body" sortable style={{ minWidth: '16rem' }}></Column>
-                    {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
-                    {/* <Column field="price" header="Price" body={priceBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column> */}
-                    {/* <Column field="category" header="Category" sortable style={{ minWidth: '10rem' }}></Column> */}
-                    {/* <Column field="rating" header="Reviews" body={ratingBodyTemplate} sortable style={{ minWidth: '12rem' }}></Column> */}
-                    {/* <Column field="inventoryStatus" header="Status" body={statusBodyTemplate} sortable style={{ minWidth: '12rem' }}></Column> */}
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                 </DataTable>
             </div>
 
-            <Dialog visible={postDialog} style={{ width: '450px' }} header="Post Details" modal className="p-fluid" footer={postDialogFooter} onHide={hideDialog}>
-                {/* {post.image && <img src={`images/post/${post.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={post.image} className="post-image block m-auto pb-3" />} */}
+            <Dialog draggable={false} visible={postDialog} style={{ width: '450px' }} header="Post Details" modal className="p-fluid" footer={postDialogFooter} onHide={hideDialog}>
                 <div className="field">
-                    {/* <label htmlFor="name">Name</label> */}
-                    {/* <InputText id="name" value={post.name} onChange={(e) => onInputChange(e, 'title')} required autoFocus className={classNames({ 'p-invalid': submitted && !post.title })} /> */}
-                    {/* {submitted && !post.name && <small className="p-error">Name is required.</small>} */}
                     <Input
                         label="Title"
                         register={register("title")}
                         type="text"
                         error={errors.title}
                         placeholder="e.g. Some Title"
-                    />
-                    {errors.title?.message && (
-                        <ErrorMessage message={errors.title.message} />
-                    )}
-                </div>
-                <div className="field">
-                    <TextArea
-                        label="Body"
-                        register={register("body")}
-                        error={errors.title}
-                        placeholder="e.g. Some Body"
                     />
                     {errors.title?.message && (
                         <ErrorMessage message={errors.title.message} />
@@ -285,14 +219,12 @@ const Table = () => {
                 </div>
 
                 <div className="formgrid grid">
-                    {/* <div className="field col">
-                        <label htmlFor="price">Price</label>
-                        <InputNumber id="price" value={post.price} onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="USD" locale="en-US" />
-                    </div> */}
                     <div className="field col">
                         <Input
                             label="User ID"
-                            register={register("userId")}
+                            register={register("userId", {
+                                valueAsNumber: true,
+                            })}
                             type="number"
                             error={errors.userId}
                             placeholder="e.g. 1435"
@@ -304,14 +236,14 @@ const Table = () => {
                 </div>
             </Dialog>
 
-            <Dialog visible={deletePostDialog} style={{ width: '450px' }} header="Confirm" modal footer={deletePostDialogFooter} onHide={hideDeletePostDialog}>
+            <Dialog draggable={false} visible={deletePostDialog} style={{ width: '450px' }} header="Confirm" modal footer={deletePostDialogFooter} onHide={hideDeletePostDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
                     {post && <span>Are you sure you want to delete <b>{post.title}</b>?</span>}
                 </div>
             </Dialog>
 
-            <Dialog visible={deletePostsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deletePostsDialogFooter} onHide={hideDeletePostsDialog}>
+            <Dialog draggable={false} visible={deletePostsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deletePostsDialogFooter} onHide={hideDeletePostsDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
                     {post && <span>Are you sure you want to delete the selected posts?</span>}

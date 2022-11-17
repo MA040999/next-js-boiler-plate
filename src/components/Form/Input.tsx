@@ -1,4 +1,5 @@
 import { InputText } from "primereact/inputtext";
+import { classNames } from "primereact/utils";
 import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 type InputProps = {
@@ -18,6 +19,7 @@ const Input = ({
   error,
   className,
 }: InputProps) => {
+
   return (
     <>
       {label && (
@@ -29,9 +31,11 @@ const Input = ({
         </label>
       )}
 
-      <input
+      <InputText
         type={type}
         id={register.name}
+        placeholder={placeholder}
+        required={register.required}
         onFocus={
           type == "number"
             ? (e) =>
@@ -40,22 +44,12 @@ const Input = ({
                 )
             : undefined
         }
-        placeholder={placeholder}
-        required={register.required}
+        className={classNames(
+          { "p-invalid": error?.message },
+          `${className}`
+        )}
         {...register}
-        className={`${className} relative block w-full min-w-[80px] appearance-none rounded-lg border border-slate-200 px-3 py-2 text-very-dark-violet placeholder-gray-400 focus:z-10 focus:border-very-dark-violet focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-very-dark-violet text-sm md:text-base ${
-          error?.message
-            ? "!border-input-error focus:!ring-input-error focus:!border-input-error"
-            : ""
-        }`}
-        aria-invalid={error ? "true" : "false"}
       />
-      <InputText type={type} placeholder={placeholder} required={register.required} id={register.name} className={`${className} relative block w-full min-w-[80px] appearance-none rounded-lg border border-slate-200 px-3 py-2 text-very-dark-violet placeholder-gray-400 focus:z-10 focus:border-very-dark-violet focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-very-dark-violet text-sm md:text-base ${
-          error?.message
-            ? "!border-input-error focus:!ring-input-error focus:!border-input-error"
-            : ""
-        }`} {...register} />
-
     </>
   );
 };

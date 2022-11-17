@@ -15,7 +15,13 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
   const LayoutComponent = isLayoutHidden ? Fragment : Layout;
 
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: Infinity
+      }
+    }
+  }))
 
   return <QueryClientProvider client={queryClient}>
     <LayoutComponent>
