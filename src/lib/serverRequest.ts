@@ -1,15 +1,13 @@
 import { GetServerSidePropsContext, NextApiRequest } from "next";
-import SERVER_API_ENDPOINTS from "../utils/serverApiEndpoints";
 import axios, { AxiosResponse } from "axios";
 import HTTP_METHODS from "../utils/httpsMethods";
 
 interface ServerRequest {
 
     method : HTTP_METHODS,
-    endPoint : SERVER_API_ENDPOINTS,
+    endPoint : string,
     context? : GetServerSidePropsContext,
     req? : NextApiRequest,
-    body? : any,
 
 }
 
@@ -20,7 +18,7 @@ interface ServerResponse<T> {
 
 }
 
-export const serverRequest = async <T>({ method, endPoint, context, body, req }: ServerRequest): Promise<ServerResponse<T>> => {
+export const serverRequest = async <T>({ method, endPoint, context, req }: ServerRequest): Promise<ServerResponse<T>> => {
 
 	const accessTokenForRequest = context ? context.req.cookies.accessToken : req?.cookies.accessToken;
 
@@ -31,7 +29,7 @@ export const serverRequest = async <T>({ method, endPoint, context, body, req }:
 		const axiosResponse: AxiosResponse<T> = await axios({
 			method,
 			url : `${process.env.SERVER_URL}/${endPoint}`,
-			data : body,
+			data : req?.body,
 			headers : {
 				'access-token' : accessTokenForRequest ?? '',
 				'client-ip': ip ?? '',

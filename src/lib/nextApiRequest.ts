@@ -1,10 +1,9 @@
 import axios, { AxiosResponse, GenericAbortSignal } from "axios";
 import HTTP_METHODS from "../utils/httpsMethods";
-import NEXT_API_ENDPOINTS from "../utils/nextApiEndpoints";
 
 const nextApiRequest = async <T>(
   method: HTTP_METHODS,
-  endPoint: NEXT_API_ENDPOINTS,
+  endPoint: string,
   body?: any,
   params?: any,
   signal?: GenericAbortSignal

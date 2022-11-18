@@ -10,11 +10,14 @@ import './table.module.css';
 import { usePosts } from '../../hooks/usePosts';
 import { IPost } from '../../interfaces/post.interface';
 import { useForm } from 'react-hook-form';
-import { PostFormInputs, postFormSchema } from '../../schemas/formInputSchema';
+import { CreatePostForm, EditPostForm, editPostFormSchema } from '../../schemas/postFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ErrorMessage from '../Form/ErrorMessage';
 import Input from '../Form/Input';
 import TextArea from '../Form/TextArea';
+import { useEditPost } from '../../hooks/useEditPost';
+import axios from 'axios';
+import { useCreatePost } from '../../hooks/useCreatePost';
 
 let emptyPost: IPost = {
     
@@ -22,12 +25,20 @@ let emptyPost: IPost = {
     id: 0,
     title: '',
     body: '',
+
 };
+
+function isEditForm(data: CreatePostForm | EditPostForm): data is EditPostForm {
+    return (data as EditPostForm).id !== undefined;
+}
 
 const Table = () => {
 
     const [postCount, setPostCount] = useState(10)
     const { data: posts, isLoading } = usePosts(postCount) 
+
+    const editPostMutation = useEditPost()
+    const createPostMutation = useCreatePost()
 
     const {
         register,
@@ -36,8 +47,8 @@ const Table = () => {
         setValue,
         clearErrors,
         reset,
-      } = useForm<PostFormInputs>({
-        resolver: zodResolver(postFormSchema),
+      } = useForm<EditPostForm>({
+        resolver: zodResolver(editPostFormSchema),
         defaultValues: emptyPost,
       });
 
@@ -46,19 +57,16 @@ const Table = () => {
     const [deletePostsDialog, setDeletePostsDialog] = useState(false);
     const [post, setPost] = useState(emptyPost);
     const [selectedPosts, setSelectedPosts] = useState<IPost[]>([]);
-    const [submitted, setSubmitted] = useState(false);
     const toast = useRef<any>(null);
     const dt = useRef<any>(null);
 
     const openNew = () => {
         reset(emptyPost)
-        setSubmitted(false);
         setPostDialog(true);
     }
 
     const hideDialog = () => {
         clearErrors()   
-        setSubmitted(false);
         setPostDialog(false);
     }
 
@@ -70,24 +78,44 @@ const Table = () => {
         setDeletePostsDialog(false);
     }
 
-    const savePost = (data: PostFormInputs) => {
-        console.log("🚀 ~ data", data)
-        clearErrors()
-        // setSubmitted(true);
-
-        // toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
-
-        // toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
+    const savePost = async (data: CreatePostForm | EditPostForm) => {
         
-        // setPostDialog(false);
-        
-        // setPost(emptyPost);
+        try {
+
+	        clearErrors()
+	
+	        if(isEditForm(data)){
+	            
+	            await editPostMutation.mutateAsync(data)
+
+                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
+
+	        }
+            else {
+                
+                await createPostMutation.mutateAsync(data)
+    
+                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
+
+            }
+
+            setPostDialog(false);
+
+        } catch (error) {
+
+            console.log("🚀 ~ error", error)
+
+            toast.current.show({ severity: 'error', summary: 'Error', detail: axios.isAxiosError(error) ? error.response?.data : error instanceof Error ? error.message : "Something went wrong", life: 3000 });
+            
+        }
+
     }
 
     const editPost = (post: IPost) => {
         setValue('body', post.body)
         setValue('title', post.title)
         setValue('userId', post.userId)
+        setValue('id', post.id)
         setPostDialog(true);
     }
 
@@ -154,7 +182,7 @@ const Table = () => {
     const postDialogFooter = (
         <React.Fragment>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={handleSubmit(savePost)} />
+            <Button label="Save" loading={editPostMutation.isLoading} icon="pi pi-check" className="p-button-text" onClick={handleSubmit(savePost)} />
         </React.Fragment>
     );
     const deletePostDialogFooter = (

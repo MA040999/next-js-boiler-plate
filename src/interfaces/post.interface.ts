@@ -1,8 +1,6 @@
-export interface IPost {
+import { EditPostForm } from "../schemas/postFormSchema"
 
-    userId: number
-    id: number
-    title: string
-    body: string
+export interface IPost extends EditPostForm {
+
 
 }
