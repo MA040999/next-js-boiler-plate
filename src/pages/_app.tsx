@@ -8,8 +8,11 @@ import { Fragment, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Layout from '../components/Layout';
+import { useBoundStore } from '../store';
 
 export default function App({ Component, pageProps, router }: AppProps) {
+
+  const toast = useBoundStore((state) => state.toast)
 
   const isLayoutHidden = [`/login`].includes(router.pathname);
 
@@ -25,7 +28,9 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
   return <QueryClientProvider client={queryClient}>
     <LayoutComponent>
-      <Component {...pageProps} />
+      <main className='m-4'>
+        <Component {...pageProps} />
+      </main>
     </LayoutComponent>
     <ReactQueryDevtools />
   </QueryClientProvider>

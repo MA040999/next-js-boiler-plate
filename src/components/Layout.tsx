@@ -10,9 +10,7 @@ const Layout = ({ children }: { children: ReactElement}) => {
         <>
             <Navbar setIsOpen={setIsOpen} />
             <Drawer isOpen={isOpen} setIsOpen={setIsOpen} />
-            <main className='m-4'>
-                {children}
-            </main>
+            {children}
         </>
     )
 }

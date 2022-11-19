@@ -13,7 +13,6 @@ import { useForm } from 'react-hook-form';
 import { CreatePostForm, createPostFormSchema, EditPostForm, editPostFormSchema } from '../../schemas/postFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEditPost } from '../../hooks/useEditPost';
-import axios from 'axios';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import FormModal from '../Form/FormModal';
 
@@ -103,8 +102,6 @@ const Table = () => {
             createPostForm.reset()
 
         } catch (error) {
-
-            console.log("🚀 ~ error", error)
 
             toast.current.show({ severity: 'error', summary: 'Error', detail: error instanceof Error ? error.message : "Something went wrong", life: 3000 });
             
@@ -206,8 +203,6 @@ const Table = () => {
         </React.Fragment>
     );
 
-    if (isLoading) return <div>Loading...</div>
-
     return (
         <div className="datatable-crud-demo">
             <Toast ref={toast} />
@@ -215,7 +210,7 @@ const Table = () => {
             <div className="card">
                 <Toolbar className="flex gap-4 mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
-                <DataTable ref={dt} value={posts} selection={selectedPosts} onSelectionChange={(e) => setSelectedPosts(e.value)}
+                <DataTable ref={dt} loading={isLoading} value={posts} selection={selectedPosts} onSelectionChange={(e) => setSelectedPosts(e.value)}
                     dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} posts"

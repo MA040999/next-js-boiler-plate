@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { IPost } from '../interfaces/post.interface'
 import nextApiRequest from '../lib/nextApiRequest'
 import { CreatePostForm } from '../schemas/postFormSchema'
@@ -12,7 +12,15 @@ const createPost = (postData: CreatePostForm) => {
 }
 
 const useCreatePost = () => {
-  return useMutation({ mutationFn: createPost })
+  
+  const queryClient = useQueryClient()
+
+  return useMutation({ 
+    mutationFn: createPost,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+    },
+  })
 }
 
 export { useCreatePost, createPost }
