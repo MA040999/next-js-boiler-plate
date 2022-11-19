@@ -106,7 +106,7 @@ const Table = () => {
 
             console.log("🚀 ~ error", error)
 
-            toast.current.show({ severity: 'error', summary: 'Error', detail: axios.isAxiosError(error) ? error.response?.data : error instanceof Error ? error.message : "Something went wrong", life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'Error', detail: error instanceof Error ? error.message : "Something went wrong", life: 3000 });
             
         }
 
