@@ -7,7 +7,7 @@ import NEXT_API_ENDPOINTS from '../utils/nextApiEndpoints'
 
 const createPost = (postData: CreatePostForm) => {
 
-  return nextApiRequest<IPost>(HTTP_METHODS.POST, NEXT_API_ENDPOINTS.EDIT_POST, postData)
+  return nextApiRequest<IPost>(HTTP_METHODS.POST, NEXT_API_ENDPOINTS.CREATE_POST, postData)
   
 }
 

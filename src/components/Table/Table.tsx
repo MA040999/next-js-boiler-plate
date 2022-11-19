@@ -10,14 +10,12 @@ import './table.module.css';
 import { usePosts } from '../../hooks/usePosts';
 import { IPost } from '../../interfaces/post.interface';
 import { useForm } from 'react-hook-form';
-import { CreatePostForm, EditPostForm, editPostFormSchema } from '../../schemas/postFormSchema';
+import { CreatePostForm, createPostFormSchema, EditPostForm, editPostFormSchema } from '../../schemas/postFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ErrorMessage from '../Form/ErrorMessage';
-import Input from '../Form/Input';
-import TextArea from '../Form/TextArea';
 import { useEditPost } from '../../hooks/useEditPost';
 import axios from 'axios';
 import { useCreatePost } from '../../hooks/useCreatePost';
+import FormModal from '../Form/FormModal';
 
 let emptyPost: IPost = {
     
@@ -40,19 +38,18 @@ const Table = () => {
     const editPostMutation = useEditPost()
     const createPostMutation = useCreatePost()
 
-    const {
-        register,
-        formState: { errors },
-        handleSubmit,
-        setValue,
-        clearErrors,
-        reset,
-      } = useForm<EditPostForm>({
+    const editPostForm = useForm<EditPostForm>({
         resolver: zodResolver(editPostFormSchema),
         defaultValues: emptyPost,
-      });
+    });
 
-    const [postDialog, setPostDialog] = useState(false);
+    const createPostForm = useForm<CreatePostForm>({
+        resolver: zodResolver(createPostFormSchema),
+        defaultValues: emptyPost,
+    });
+
+    const [editPostDialog, setEditPostDialog] = useState(false);
+    const [createPostDialog, setCreatePostDialog] = useState(false);
     const [deletePostDialog, setDeletePostDialog] = useState(false);
     const [deletePostsDialog, setDeletePostsDialog] = useState(false);
     const [post, setPost] = useState(emptyPost);
@@ -61,13 +58,16 @@ const Table = () => {
     const dt = useRef<any>(null);
 
     const openNew = () => {
-        reset(emptyPost)
-        setPostDialog(true);
+        setCreatePostDialog(true);
     }
 
-    const hideDialog = () => {
-        clearErrors()   
-        setPostDialog(false);
+    const hideCreatePostDialog = () => {
+        setCreatePostDialog(false);
+    }
+
+    const hideEditPostDialog = () => {
+        editPostForm.clearErrors()   
+        setEditPostDialog(false);
     }
 
     const hideDeletePostDialog = () => {
@@ -82,7 +82,8 @@ const Table = () => {
         
         try {
 
-	        clearErrors()
+	        editPostForm.clearErrors()
+	        createPostForm.clearErrors()
 	
 	        if(isEditForm(data)){
 	            
@@ -90,16 +91,17 @@ const Table = () => {
 
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
 
+                setEditPostDialog(false);
+
+                return
+
 	        }
-            else {
                 
-                await createPostMutation.mutateAsync(data)
-    
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
+            await createPostMutation.mutateAsync(data)
 
-            }
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
 
-            setPostDialog(false);
+            setCreatePostDialog(false);
 
         } catch (error) {
 
@@ -112,11 +114,11 @@ const Table = () => {
     }
 
     const editPost = (post: IPost) => {
-        setValue('body', post.body)
-        setValue('title', post.title)
-        setValue('userId', post.userId)
-        setValue('id', post.id)
-        setPostDialog(true);
+        editPostForm.setValue('body', post.body)
+        editPostForm.setValue('title', post.title)
+        editPostForm.setValue('userId', post.userId)
+        editPostForm.setValue('id', post.id)
+        setEditPostDialog(true);
     }
 
     const confirmDeletePost = (post: IPost) => {
@@ -179,10 +181,17 @@ const Table = () => {
             <h5 className="mx-0 my-1">Manage Posts</h5>
         </div>
     );
-    const postDialogFooter = (
+    const createPostDialogFooter = (
         <React.Fragment>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" loading={editPostMutation.isLoading} icon="pi pi-check" className="p-button-text" onClick={handleSubmit(savePost)} />
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideCreatePostDialog} />
+            <Button label="Save" loading={createPostMutation.isLoading} icon="pi pi-check" className="p-button-text" onClick={createPostForm.handleSubmit(savePost)} />
+        </React.Fragment>
+    );
+
+    const editPostDialogFooter = (
+        <React.Fragment>
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideEditPostDialog} />
+            <Button label="Save" loading={editPostMutation.isLoading} icon="pi pi-check" className="p-button-text" onClick={editPostForm.handleSubmit(savePost)} />
         </React.Fragment>
     );
     const deletePostDialogFooter = (
@@ -220,48 +229,8 @@ const Table = () => {
                 </DataTable>
             </div>
 
-            <Dialog draggable={false} visible={postDialog} style={{ width: '450px' }} header="Post Details" modal className="p-fluid" footer={postDialogFooter} onHide={hideDialog}>
-                <div className="field">
-                    <Input
-                        label="Title"
-                        register={register("title")}
-                        type="text"
-                        error={errors.title}
-                        placeholder="e.g. Some Title"
-                    />
-                    {errors.title?.message && (
-                        <ErrorMessage message={errors.title.message} />
-                    )}
-                </div>
-                <div className="field">
-                    <TextArea
-                        label="Body"
-                        register={register("body")}
-                        error={errors.body}
-                        placeholder="e.g. Some Body"
-                    />
-                    {errors.body?.message && (
-                        <ErrorMessage message={errors.body.message} />
-                    )}
-                </div>
-
-                <div className="formgrid grid">
-                    <div className="field col">
-                        <Input
-                            label="User ID"
-                            register={register("userId", {
-                                valueAsNumber: true,
-                            })}
-                            type="number"
-                            error={errors.userId}
-                            placeholder="e.g. 1435"
-                        />
-                        {errors.userId?.message && (
-                            <ErrorMessage message={errors.userId.message} />
-                        )}
-                    </div>
-                </div>
-            </Dialog>
+            <FormModal formType='create' errors={createPostForm.formState.errors} register={createPostForm.register} visible={createPostDialog} style={{ backgroundColor: 'red' }} header="Create Post" footer={createPostDialogFooter} onHide={hideCreatePostDialog}/>
+            <FormModal formType='edit' errors={editPostForm.formState.errors} register={editPostForm.register} visible={editPostDialog} style={{ backgroundColor: 'red' }} header="Edit Post Details" footer={editPostDialogFooter} onHide={hideEditPostDialog}/>
 
             <Dialog draggable={false} visible={deletePostDialog} style={{ width: '450px' }} header="Confirm" modal footer={deletePostDialogFooter} onHide={hideDeletePostDialog}>
                 <div className="confirmation-content">
