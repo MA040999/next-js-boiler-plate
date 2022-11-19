@@ -82,9 +82,6 @@ const Table = () => {
         
         try {
 
-	        editPostForm.clearErrors()
-	        createPostForm.clearErrors()
-	
 	        if(isEditForm(data)){
 	            
 	            await editPostMutation.mutateAsync(data)
@@ -102,6 +99,8 @@ const Table = () => {
             toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
 
             setCreatePostDialog(false);
+
+            createPostForm.reset()
 
         } catch (error) {
 
