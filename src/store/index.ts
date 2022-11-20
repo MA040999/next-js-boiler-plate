@@ -7,7 +7,8 @@ export const useBoundStore = create<AdminActionHistorySlice>()(
     persist((...a) => ({
       ...createAdminActionHistorySlice(...a),
     }), {
-        name: 'admin-action-history'
+        name: 'admin-action-history',
+        partialize: (state) => ({history: state.history}),
     })
   )
 );
