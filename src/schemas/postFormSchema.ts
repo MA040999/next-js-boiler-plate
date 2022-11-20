@@ -14,3 +14,5 @@ export const editPostFormSchema = createPostFormSchema.merge(
 
 export type EditPostForm = z.infer<typeof editPostFormSchema>;
 export type CreatePostForm = z.infer<typeof createPostFormSchema>;
+
+export type PostForm = EditPostForm & CreatePostForm;

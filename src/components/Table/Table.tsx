@@ -9,7 +9,7 @@ import { Dialog } from 'primereact/dialog';
 import './table.module.css';
 import { usePosts } from '../../hooks/usePosts';
 import { IPost } from '../../interfaces/post.interface';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormRegister } from 'react-hook-form';
 import { CreatePostForm, createPostFormSchema, EditPostForm, editPostFormSchema } from '../../schemas/postFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEditPost } from '../../hooks/useEditPost';
@@ -247,8 +247,8 @@ const Table = () => {
                 </DataTable>
             </div>
 
-            <FormModal formType='create' errors={createPostForm.formState.errors} register={createPostForm.register} visible={createPostDialog} style={{ backgroundColor: 'red' }} header="Create Post" footer={createPostDialogFooter} onHide={hideCreatePostDialog}/>
-            <FormModal formType='edit' errors={editPostForm.formState.errors} register={editPostForm.register} visible={editPostDialog} style={{ backgroundColor: 'red' }} header="Edit Post Details" footer={editPostDialogFooter} onHide={hideEditPostDialog}/>
+            <FormModal errors={createPostForm.formState.errors} register={createPostForm.register as UseFormRegister<any>} visible={createPostDialog} style={{ backgroundColor: 'red' }} header="Create Post" footer={createPostDialogFooter} onHide={hideCreatePostDialog}/>
+            <FormModal errors={editPostForm.formState.errors} register={editPostForm.register as UseFormRegister<any>} visible={editPostDialog} style={{ backgroundColor: 'red' }} header="Edit Post Details" footer={editPostDialogFooter} onHide={hideEditPostDialog}/>
 
             <Dialog draggable={false} visible={deletePostDialog} style={{ width: '450px' }} header="Confirm" modal footer={deletePostDialogFooter} onHide={hideDeletePostDialog}>
                 <div className="confirmation-content">
