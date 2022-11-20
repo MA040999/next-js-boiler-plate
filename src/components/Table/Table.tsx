@@ -31,8 +31,8 @@ function isEditForm(data: CreatePostForm | EditPostForm): data is EditPostForm {
 
 const Table = () => {
 
-    const [postCount, setPostCount] = useState(10)
-    const { data: posts, isLoading } = usePosts(postCount) 
+    const [perPageCount, setPerPageCount] = useState(10)
+    const { data: posts, isLoading } = usePosts(perPageCount) 
 
     const editPostMutation = useEditPost()
     const createPostMutation = useCreatePost()

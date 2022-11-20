@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { IPost } from '../interfaces/post.interface'
 import nextApiRequest from '../lib/nextApiRequest'
 import HTTP_METHODS from '../utils/httpsMethods'
@@ -14,7 +14,14 @@ const fetchPosts = async (limit = 10, abortSignal?: AbortSignal) => {
 }
 
 const usePosts = (limit: number) => {
-  return useQuery(['posts', limit], ({signal}) => fetchPosts(limit, signal))
+
+  const queryClient = useQueryClient()
+
+  return useQuery(['posts', limit], ({signal}) => fetchPosts(limit, signal), {
+    onSettled() {
+      queryClient.removeQueries({ queryKey: ['posts'], type: 'inactive' })
+    }
+  })
 }
 
 export { usePosts, fetchPosts }
