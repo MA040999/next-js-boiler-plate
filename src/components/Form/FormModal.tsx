@@ -1,13 +1,13 @@
 import { Dialog, DialogProps } from 'primereact/dialog'
 import React from 'react'
-import { FieldErrorsImpl, FieldValues, Path, UseFormRegister } from 'react-hook-form'
+import { FieldErrorsImpl, UseFormRegister } from 'react-hook-form'
 import { PostForm } from '../../schemas/postFormSchema'
 import ErrorMessage from './ErrorMessage'
 import Input from './Input'
 import TextArea from './TextArea'
 
 type FormModalProps = {
-    register: UseFormRegister<FieldValues>
+    register: UseFormRegister<PostForm>
     errors: Partial<FieldErrorsImpl<PostForm>>
 };
 
@@ -18,7 +18,7 @@ const FormModal = ({ className, header, visible, style, onHide, register, errors
         <div className="field">
             <Input
                 label="Title"
-                register={ register<Path<PostForm>>('title') }
+                register={ register('title') }
                 type="text"
                 error={errors.title}
                 placeholder="e.g. Some Title"
@@ -30,7 +30,7 @@ const FormModal = ({ className, header, visible, style, onHide, register, errors
         <div className="field">
             <TextArea
                 label="Body"
-                register={register<Path<PostForm>>("body")}
+                register={register("body")}
                 error={errors.body}
                 placeholder="e.g. Some Body"
             />
@@ -42,7 +42,7 @@ const FormModal = ({ className, header, visible, style, onHide, register, errors
         <div className="field">
             <Input
                 label="User ID"
-                register={register<Path<PostForm>>("userId", {
+                register={register("userId", {
                     valueAsNumber: true,
                 })}
                 type="number"
