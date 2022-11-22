@@ -15,11 +15,11 @@ const AdminHistoryDrawer = ({isOpen, setIsOpen} : IDrawerProps) => {
     return (
         <Sidebar visible={isOpen} position={'right'} onHide={() => setIsOpen(false)}>
             <h3>Admin Action History</h3>
-            <div className='mt-3 flex gap-4 flex-column'>
+            <div className='mt-3 flex gap-4 flex-col'>
                 {
                     history.map((h, id) => (
-                        <Card key={id} className="shadow-3">
-                            <div className='flex gap-3 flex-column'>
+                        <Card key={id} className="shadow-md drop-shadow-md">
+                            <div className='flex gap-3 flex-col'>
                                 <span><strong>Admin Name:</strong> {h.name}</span>
                                 <span><strong>Action:</strong> {h.action}</span>
                                 <span><strong>Action Taken At:</strong> {new Date(h.createdAt).toLocaleString(undefined, {
