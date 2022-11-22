@@ -1,8 +1,8 @@
+import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
+import "primereact/resources/primereact.min.css";                  //core css
+import "primeicons/primeicons.css"; 
+import "/node_modules/primeflex/primeflex.css"; 
 import '../styles/globals.css'
-import '/node_modules/primeflex/primeflex.css'
-import "primereact/resources/themes/tailwind-light/theme.css";
-import "primereact/resources/primereact.min.css";        
-import "primeicons/primeicons.css";  
 import type { AppProps } from 'next/app'
 import { Fragment, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
