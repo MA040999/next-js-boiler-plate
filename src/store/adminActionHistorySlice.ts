@@ -1,4 +1,4 @@
-import { StateCreator } from "zustand";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface AdminActionHistory {
   name: string,
@@ -6,17 +6,28 @@ interface AdminActionHistory {
   action: string
 }
 
-export interface AdminActionHistorySlice {
+interface AdminActionHistoryState {
   history: AdminActionHistory[];
-  addHistory: (data: AdminActionHistory) => void
 }
 
-export const createAdminActionHistorySlice: StateCreator<AdminActionHistorySlice> = (
-  set
-) => ({
-
+const initialState: AdminActionHistoryState = {
   history: [],
-  
-  addHistory: (data) => set((state) => ({ history: [...state.history, data] })),
+}
 
-});
+export const adminActionHistorySlice = createSlice({
+  name: 'adminActionHistory',
+  initialState,
+  reducers: {
+
+    addHistory: (state, action: PayloadAction<AdminActionHistory>) => {
+
+        state.history.push(action.payload)
+
+    },
+
+  },
+})
+
+export const { addHistory } = adminActionHistorySlice.actions
+
+export default adminActionHistorySlice.reducer

@@ -15,8 +15,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEditPost } from '../../hooks/useEditPost';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import FormModal from '../Form/FormModal';
-import { useBoundStore } from '../../store';
-import shallow from 'zustand/shallow'
+import { useAppDispatch } from '../../store/hooks'
+import { addHistory } from '../../store/adminActionHistorySlice';
 
 let emptyPost: IPost = {
     
@@ -34,12 +34,9 @@ function isEditForm(data: CreatePostForm | EditPostForm): data is EditPostForm {
 const Table = () => {
 
     const [perPageCount, setPerPageCount] = useState(10)
-    const { data: posts, isLoading } = usePosts(perPageCount) 
-
-    const { addHistory } = useBoundStore(
-        (state) => ({ addHistory: state.addHistory }),
-        shallow
-    )
+    const { data: posts, isLoading } = usePosts(perPageCount)
+    
+    const dispatch = useAppDispatch();
 
     const editPostMutation = useEditPost()
     const createPostMutation = useCreatePost()
@@ -92,11 +89,11 @@ const Table = () => {
 	            
 	            await editPostMutation.mutateAsync(data)
 
-                addHistory({
+                dispatch(addHistory({
                     action: 'Edit Post',
                     createdAt: new Date().toISOString(),
                     name: 'Admin'
-                })
+                }))
 
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Updated', life: 3000 });
 
@@ -108,11 +105,11 @@ const Table = () => {
                 
             await createPostMutation.mutateAsync(data)
 
-            addHistory({
+            dispatch(addHistory({
                 action: 'Add Post',
                 createdAt: new Date().toISOString(),
                 name: 'Admin'
-            })
+            }))
 
             toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Created', life: 3000 });
 
@@ -146,11 +143,11 @@ const Table = () => {
         // setPosts(_posts);
         setDeletePostDialog(false);
         setPost(emptyPost);
-        addHistory({
+        dispatch(addHistory({
             action: 'Delete Post',
             createdAt: new Date().toISOString(),
             name: 'Admin'
-        })
+        }))
         toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Post Deleted', life: 3000 });
     }
 

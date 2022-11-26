@@ -1,7 +1,7 @@
 import React from 'react'
 import { Sidebar } from 'primereact/sidebar';
-import { useBoundStore } from '../store';
 import { Card } from 'primereact/card';
+import { useAppSelector } from '../store/hooks'
 
 interface IDrawerProps {
     isOpen: boolean,
@@ -10,7 +10,7 @@ interface IDrawerProps {
 
 const AdminHistoryDrawer = ({isOpen, setIsOpen} : IDrawerProps) => {
 
-    const history = useBoundStore(state => state.history)
+    const history = useAppSelector(state => state.adminActionHistory.history)
 
     return (
         <Sidebar visible={isOpen} position={'right'} onHide={() => setIsOpen(false)}>
